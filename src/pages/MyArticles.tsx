@@ -193,10 +193,16 @@ const MyArticles = () => {
     }
   };
 
+  // 빈 함수로 onViewChange를 무시
+  const handleViewChange = () => {
+    // MyArticles 페이지에서는 사이드바의 뷰 변경을 무시
+    // 실제 네비게이션은 AppSidebar 내부에서 처리됨
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
-        <AppSidebar currentView="myArticles" onViewChange={setCurrentView} />
+        <AppSidebar currentView="myArticles" onViewChange={handleViewChange} />
         
         <main className="flex-1 flex flex-col">
           <header className="bg-white border-b border-gray-200 px-6 py-4">
