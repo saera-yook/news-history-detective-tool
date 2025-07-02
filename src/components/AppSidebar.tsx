@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Home, Clock, Heart, Menu } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -44,11 +43,15 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
 
   const handleMenuClick = (item: any) => {
     if (item.path === '/my-articles') {
+      // 내가 조회한 기사 페이지로 이동
       navigate('/my-articles');
+      // onViewChange는 호출하지 않음 (MyArticles 페이지에서 자체적으로 관리)
     } else if (item.id === 'likes') {
+      // 좋아요/구독 관리는 메인 페이지의 특정 뷰
       navigate('/');
       onViewChange('likes');
     } else {
+      // 기사 목록 (홈)
       navigate('/');
       onViewChange('home');
       

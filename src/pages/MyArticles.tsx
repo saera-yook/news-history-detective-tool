@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 import { AppSidebar } from '../components/AppSidebar';
 import { Timeline } from '../components/Timeline';
@@ -40,25 +40,102 @@ const MyArticles = () => {
     }
   };
 
+  // 변경 성격을 분석하는 함수
+  function analyzeChangeSeverity(article: UserArticle): 'minor' | 'moderate' | 'major' {
+    if (article.history.length < 2) return 'minor';
+    
+    const firstVersion = article.history[0];
+    const lastVersion = article.history[article.history.length - 1];
+    
+    const titleChanged = firstVersion.title !== lastVersion.title;
+    const bodyChanged = firstVersion.body !== lastVersion.body;
+    
+    // 제목 변경 비율 계산
+    const titleWords = firstVersion.title.split(' ');
+    const lastTitleWords = lastVersion.title.split(' ');
+    const titleChangeRatio = Math.abs(titleWords.length - lastTitleWords.length) / titleWords.length;
+    
+    // 본문 변경 비율 계산
+    const bodyWords = firstVersion.body.split(' ');
+    const lastBodyWords = lastVersion.body.split(' ');
+    const bodyChangeRatio = Math.abs(bodyWords.length - lastBodyWords.length) / bodyWords.length;
+    
+    // 변경 횟수도 고려
+    const changeCount = article.history.length;
+    
+    // 중대한 변경: 제목이 크게 바뀌었거나, 본문이 20% 이상 변경되었거나, 변경 횟수가 많은 경우
+    if (titleChangeRatio > 0.3 || bodyChangeRatio > 0.2 || changeCount > 4) {
+      return 'major';
+    }
+    
+    // 보통 변경: 제목이 바뀌었거나 본문이 10% 이상 변경된 경우
+    if (titleChanged || bodyChangeRatio > 0.1 || changeCount > 2) {
+      return 'moderate';
+    }
+    
+    // 경미한 변경: 그 외의 경우 (주로 오타 수정 등)
+    return 'minor';
+  }
+
+  // 변경 성격에 따른 배지 컴포넌트
+  function ChangeSeverityBadge({ severity }: { severity: 'minor' | 'moderate' | 'major' }) {
+    const config = {
+      minor: {
+        label: '경미한 수정',
+        className: 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200'
+      },
+      moderate: {
+        label: '보통 수정',
+        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200'
+      },
+      major: {
+        label: '중대한 수정',
+        className: 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200'
+      }
+    };
+
+    const { label, className } = config[severity];
+
+    return (
+      <Badge 
+        className={`text-xs font-medium px-2 py-1 ${className}`}
+      >
+        {label}
+      </Badge>
+    );
+  }
+
   const renderArticlesList = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-900">내가 조회한 기사</h2>
       <div className="grid gap-4">
-        {mockUserArticles.map((article, index) => (
-          <div
-            key={index}
-            className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg cursor-pointer hover:shadow-md transition-all duration-200"
-            onClick={() => showHistory(article.history)}
-          >
-            <h3 className="font-semibold text-gray-900 mb-2">
-              {article.title || article.url}
-            </h3>
-            {article.date && (
-              <p className="text-sm text-gray-600 mb-2">{article.date}</p>
-            )}
-            <p className="text-sm text-gray-700">{article.desc || ''}</p>
-          </div>
-        ))}
+        {mockUserArticles.map((article, index) => {
+          const changeSeverity = analyzeChangeSeverity(article);
+          
+          return (
+            <div
+              key={index}
+              className="relative p-4 bg-cyan-50 border border-cyan-200 rounded-lg cursor-pointer hover:shadow-md transition-all duration-200 pr-24"
+              onClick={() => showHistory(article.history)}
+            >
+              {/* 변경 성격 플래그 - 우측 상단 */}
+              <div className="absolute top-3 right-3 z-10">
+                <ChangeSeverityBadge severity={changeSeverity} />
+              </div>
+
+              <h3 className="font-semibold text-gray-900 mb-2">
+                {article.title || article.url}
+              </h3>
+              {article.date && (
+                <p className="text-sm text-gray-600 mb-2">{article.date}</p>
+              )}
+              <p className="text-sm text-gray-700">{article.desc || ''}</p>
+              <div className="mt-3 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full inline-block">
+                {article.history.length}개 버전
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -119,7 +196,7 @@ const MyArticles = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
-        <AppSidebar currentView="myArticles" onViewChange={() => {}} />
+        <AppSidebar currentView="myArticles" onViewChange={setCurrentView} />
         
         <main className="flex-1 flex flex-col">
           <header className="bg-white border-b border-gray-200 px-6 py-4">
