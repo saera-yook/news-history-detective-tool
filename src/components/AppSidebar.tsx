@@ -36,7 +36,8 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
       return location.pathname === '/my-articles';
     }
     if (item.id === 'likes') {
-      return location.pathname === '/' && currentView === 'likes';
+      return (location.pathname === '/' && currentView === 'likes') || 
+             (location.pathname === '/my-articles' && currentView === 'likes');
     }
     return location.pathname === '/' && (currentView === 'home' || currentView === 'history');
   };
@@ -44,12 +45,20 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
   const handleMenuClick = (item: any) => {
     if (item.path === '/my-articles') {
       // 내가 조회한 기사 페이지로 이동
-      navigate('/my-articles');
-      // onViewChange는 호출하지 않음 (MyArticles 페이지에서 자체적으로 관리)
+      if (location.pathname !== '/my-articles') {
+        navigate('/my-articles');
+      }
+      onViewChange('home'); // 기사 목록 뷰로 설정
     } else if (item.id === 'likes') {
-      // 좋아요/구독 관리는 메인 페이지의 특정 뷰
-      navigate('/');
-      onViewChange('likes');
+      // 좋아요/구독 관리 뷰
+      if (location.pathname === '/my-articles') {
+        // 현재 MyArticles 페이지에 있으면 페이지 이동 없이 뷰만 변경
+        onViewChange('likes');
+      } else {
+        // 다른 페이지에 있으면 메인 페이지로 이동 후 뷰 변경
+        navigate('/');
+        onViewChange('likes');
+      }
     } else {
       // 기사 목록 (홈)
       navigate('/');

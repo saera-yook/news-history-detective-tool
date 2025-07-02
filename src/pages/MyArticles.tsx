@@ -10,7 +10,7 @@ import { VersionCompare } from '../components/VersionCompare';
 import { ActionButtons } from '../components/ActionButtons';
 
 import { mockUserArticles } from '../data/mockData';
-import { NewsVersion, UserArticle } from '../types/news';
+import { NewsVersion, UserArticle, SubscriptionData } from '../types/news';
 
 const MyArticles = () => {
   const [currentView, setCurrentView] = useState('list');
@@ -18,6 +18,20 @@ const MyArticles = () => {
   const [selectedA, setSelectedA] = useState(0);
   const [selectedB, setSelectedB] = useState(0);
   const [likeStatus, setLikeStatus] = useState('');
+
+  // 구독 데이터 상태 (실제로는 전역 상태나 API에서 가져와야 함)
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData>({
+    subscribedOrgs: ['newstapa.org', 'hankyoreh.com'],
+    subscribedReporters: ['홍길동', '김기자'],
+    likedArticles: [
+      {
+        url: 'https://newstapa.org/article/20250627-education-seminar',
+        title: '대한교조, 리박스쿨, 뉴라이트의 극우 역사 세미나',
+        date: '2025-06-27',
+        history: []
+      }
+    ]
+  });
 
   const showHistory = (customHistory: NewsVersion[]) => {
     if (customHistory.length === 0) return;
@@ -184,19 +198,125 @@ const MyArticles = () => {
     </div>
   );
 
+  const renderLikesSection = () => (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">구독 관리</h2>
+        <Button
+          onClick={() => setCurrentView('list')}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          기사 목록으로
+        </Button>
+      </div>
+      
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">🔔 구독한 언론사</h3>
+          {subscriptionData.subscribedOrgs.length > 0 ? (
+            <div className="grid gap-3">
+              {subscriptionData.subscribedOrgs.map(org => (
+                <div key={org} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <span className="font-medium text-gray-900">{org}</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSubscriptionData(prev => ({
+                        ...prev,
+                        subscribedOrgs: prev.subscribedOrgs.filter(o => o !== org)
+                      }));
+                    }}
+                  >
+                    구독 취소
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">구독한 언론사가 없습니다.</p>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">🧑‍💼 구독한 기자</h3>
+          {subscriptionData.subscribedReporters.length > 0 ? (
+            <div className="grid gap-3">
+              {subscriptionData.subscribedReporters.map(reporter => (
+                <div key={reporter} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                  <span className="font-medium text-gray-900">{reporter}</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSubscriptionData(prev => ({
+                        ...prev,
+                        subscribedReporters: prev.subscribedReporters.filter(r => r !== reporter)
+                      }));
+                    }}
+                  >
+                    구독 취소
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">구독한 기자가 없습니다.</p>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">❤️ 좋아요 한 기사</h3>
+          {subscriptionData.likedArticles.length > 0 ? (
+            <div className="grid gap-3">
+              {subscriptionData.likedArticles.map((article, index) => (
+                <div key={index} className="p-4 bg-red-50 rounded-lg">
+                  <h4 className="font-semibold text-gray-900 mb-2">{article.title}</h4>
+                  <p className="text-sm text-gray-600 mb-3">{article.date}</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSubscriptionData(prev => ({
+                        ...prev,
+                        likedArticles: prev.likedArticles.filter((_, i) => i !== index)
+                      }));
+                    }}
+                  >
+                    좋아요 취소
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">좋아요 한 기사가 없습니다.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (currentView) {
       case 'history':
         return renderHistorySection();
+      case 'likes':
+        return renderLikesSection();
       default:
         return renderArticlesList();
     }
   };
 
-  // 빈 함수로 onViewChange를 무시
-  const handleViewChange = () => {
-    // MyArticles 페이지에서는 사이드바의 뷰 변경을 무시
-    // 실제 네비게이션은 AppSidebar 내부에서 처리됨
+  // 사이드바에서 뷰 변경 요청을 처리
+  const handleViewChange = (view: string) => {
+    if (view === 'likes') {
+      setCurrentView('likes');
+    } else if (view === 'home') {
+      setCurrentView('list');
+    }
+    // myArticles는 이미 현재 페이지이므로 무시
   };
 
   return (
@@ -210,10 +330,13 @@ const MyArticles = () => {
               <SidebarTrigger className="lg:hidden" />
               <div className="flex-1">
                 <h1 className="text-xl font-bold text-gray-900">
-                  내가 조회한 기사
+                  {currentView === 'likes' ? '구독 관리' : '내가 조회한 기사'}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  이전에 조회한 기사들의 수정 이력을 확인하세요
+                  {currentView === 'likes' 
+                    ? '구독한 언론사, 기자 및 좋아요 한 기사를 관리하세요'
+                    : '이전에 조회한 기사들의 수정 이력을 확인하세요'
+                  }
                 </p>
               </div>
             </div>
