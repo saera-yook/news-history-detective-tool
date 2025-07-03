@@ -9,14 +9,17 @@ interface NewsCardProps {
 }
 
 // 변경 성격을 분석하는 함수
-function analyzeChangeSeverity(article: NewsArticle): 'minor' | 'moderate' | 'major' {
-  if (article.history.length < 2) return 'minor';
+function analyzeChangeSeverity(article: NewsArticle): 'none' | 'minor' | 'moderate' | 'major' {
+  if (article.history.length < 2) return 'none';
   
   const firstVersion = article.history[0];
   const lastVersion = article.history[article.history.length - 1];
   
   const titleChanged = firstVersion.title !== lastVersion.title;
   const bodyChanged = firstVersion.body !== lastVersion.body;
+  
+  // 변경이 없는 경우
+  if (!titleChanged && !bodyChanged) return 'none';
   
   // 제목 변경 비율 계산
   const titleWords = firstVersion.title.split(' ');
@@ -47,13 +50,18 @@ function analyzeChangeSeverity(article: NewsArticle): 'minor' | 'moderate' | 'ma
 
 // 변경 분석 정보를 생성하는 함수
 function analyzeChanges(article: NewsArticle) {
-  if (article.history.length < 2) return { type: 'minor', summary: '변경 사항이 없습니다.' };
+  if (article.history.length < 2) return { type: 'none', summary: '변경 사항이 없습니다.' };
   
   const firstVersion = article.history[0];
   const lastVersion = article.history[article.history.length - 1];
   
   const titleChanged = firstVersion.title !== lastVersion.title;
   const bodyChanged = firstVersion.body !== lastVersion.body;
+  
+  // 변경이 없는 경우
+  if (!titleChanged && !bodyChanged) {
+    return { type: 'none', summary: '변경 사항이 없습니다.' };
+  }
   
   // 간단한 분석 로직 (실제로는 더 정교한 AI 분석이 필요)
   const titleWords = firstVersion.title.split(' ');
@@ -86,17 +94,14 @@ function ChangeSeverityBadge({ severity }: { severity: 'minor' | 'moderate' | 'm
   const config = {
     minor: {
       label: '경미한 수정',
-      variant: 'default' as const,
       className: 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200'
     },
     moderate: {
       label: '보통 수정',
-      variant: 'secondary' as const,
       className: 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200'
     },
     major: {
       label: '중대한 수정',
-      variant: 'destructive' as const,
       className: 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200'
     }
   };
@@ -113,29 +118,33 @@ function ChangeSeverityBadge({ severity }: { severity: 'minor' | 'moderate' | 'm
 }
 
 // 변경 분석 아이콘
-function getChangeIcon(type: 'minor' | 'moderate' | 'major') {
+function getChangeIcon(type: 'none' | 'minor' | 'moderate' | 'major') {
   switch (type) {
     case 'major': return <AlertTriangle className="h-4 w-4 text-red-500" />;
     case 'moderate': return <FileText className="h-4 w-4 text-yellow-500" />;
-    default: return <Pencil className="h-4 w-4 text-green-500" />;
+    case 'minor': return <Pencil className="h-4 w-4 text-green-500" />;
+    default: return <FileText className="h-4 w-4 text-gray-400" />;
   }
 }
 
 export function NewsCard({ article, onClick }: NewsCardProps) {
   const changeSeverity = analyzeChangeSeverity(article);
   const changeAnalysis = analyzeChanges(article);
+  const hasChanges = changeSeverity !== 'none';
 
   return (
     <Card 
       className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] border-l-4 border-l-newstapa-blue bg-gradient-to-r from-blue-50/50 to-white relative"
       onClick={onClick}
     >
-      {/* 변경 성격 플래그 - 우측 상단 */}
-      <div className="absolute top-3 right-3 z-10">
-        <ChangeSeverityBadge severity={changeSeverity} />
-      </div>
+      {/* 변경 성격 플래그 - 우측 상단 (변경 사항이 있을 때만 표시) */}
+      {hasChanges && (
+        <div className="absolute top-3 right-3 z-10">
+          <ChangeSeverityBadge severity={changeSeverity as 'minor' | 'moderate' | 'major'} />
+        </div>
+      )}
 
-      <CardHeader className="pb-3 pr-24">
+      <CardHeader className={`pb-3 ${hasChanges ? 'pr-24' : 'pr-6'}`}>
         <h3 className="font-semibold text-lg text-gray-900 leading-tight line-clamp-2">
           {article.title}
         </h3>
@@ -171,8 +180,12 @@ export function NewsCard({ article, onClick }: NewsCardProps) {
               <p className="text-xs text-gray-600 leading-relaxed">{changeAnalysis.summary}</p>
               <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
                 <span>• 총 {article.history.length}개 버전</span>
-                <span>• 첫 게시: {article.history[0]?.timestamp}</span>
-                <span>• 최종 수정: {article.history[article.history.length - 1]?.timestamp}</span>
+                {article.history.length > 0 && (
+                  <>
+                    <span>• 첫 게시: {article.history[0]?.timestamp}</span>
+                    <span>• 최종 수정: {article.history[article.history.length - 1]?.timestamp}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>

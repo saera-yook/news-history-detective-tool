@@ -41,14 +41,17 @@ const MyArticles = () => {
   };
 
   // 변경 성격을 분석하는 함수
-  function analyzeChangeSeverity(article: UserArticle): 'minor' | 'moderate' | 'major' {
-    if (article.history.length < 2) return 'minor';
+  function analyzeChangeSeverity(article: UserArticle): 'none' | 'minor' | 'moderate' | 'major' {
+    if (article.history.length < 2) return 'none';
     
     const firstVersion = article.history[0];
     const lastVersion = article.history[article.history.length - 1];
     
     const titleChanged = firstVersion.title !== lastVersion.title;
     const bodyChanged = firstVersion.body !== lastVersion.body;
+    
+    // 변경이 없는 경우
+    if (!titleChanged && !bodyChanged) return 'none';
     
     // 제목 변경 비율 계산
     const titleWords = firstVersion.title.split(' ');
@@ -111,17 +114,20 @@ const MyArticles = () => {
       <div className="grid gap-4">
         {mockUserArticles.map((article, index) => {
           const changeSeverity = analyzeChangeSeverity(article);
+          const hasChanges = changeSeverity !== 'none';
           
           return (
             <div
               key={index}
-              className="relative p-4 bg-cyan-50 border border-cyan-200 rounded-lg cursor-pointer hover:shadow-md transition-all duration-200 pr-24"
+              className={`relative p-4 bg-cyan-50 border border-cyan-200 rounded-lg cursor-pointer hover:shadow-md transition-all duration-200 ${hasChanges ? 'pr-24' : 'pr-6'}`}
               onClick={() => showHistory(article.history)}
             >
-              {/* 변경 성격 플래그 - 우측 상단 */}
-              <div className="absolute top-3 right-3 z-10">
-                <ChangeSeverityBadge severity={changeSeverity} />
-              </div>
+              {/* 변경 성격 플래그 - 우측 상단 (변경 사항이 있을 때만 표시) */}
+              {hasChanges && (
+                <div className="absolute top-3 right-3 z-10">
+                  <ChangeSeverityBadge severity={changeSeverity as 'minor' | 'moderate' | 'major'} />
+                </div>
+              )}
 
               <h3 className="font-semibold text-gray-900 mb-2">
                 {article.title || article.url}
