@@ -13,7 +13,7 @@ export const mockNewsData: NewsArticle[] = [
       {
         timestamp: '2025-06-27 14:30',
         title: '대한교조, 리박스쿨, 뉴라이트의 극우 역사 세미나',
-        body: '대한교조가 주최한 역사 세미나에서 논란이 되고 있는 내용들이 다뤄졌습니다. 이번 세미나는 역사 교육의 방향성에 대한 중요한 논의의 장이 되었습니다. 특히 일제강점기와 한국전쟁에 대한 새로운 해석이 제시되어 큰 파장을 일으키고 있습니다.',
+        body: '대한교조가 주최한 역사 세미나에서 논란이 되고 있는 내용들이 다뤄졌습니다. 이번 세미나는 역사 교육의 방향성에 대한 중요한 논의의 장이 되었습니다. 특히 일제강점기와 한국전쟁에 대한 새로운 해석이 제시되어 큰 파장을 일으키고 있습니다. 교육부는 이에 대한 공식 입장을 발표할 예정입니다.',
         changeType: 'both'
       },
       {
@@ -33,22 +33,22 @@ export const mockNewsData: NewsArticle[] = [
   {
     id: 2,
     url: 'https://hankyoreh.com/article/20250626-climate-policy',
-    title: '정부, 탄소중립 정책 일부 수정 검토',
+    title: '정부, 탄소중립 정책 전면 재검토 발표',
     date: '2025-06-26',
-    desc: '정부가 기존 탄소중립 정책의 일부 수정을 검토하고 있다고 발표했습니다.',
+    desc: '정부가 기존 탄소중립 정책을 전면 재검토하겠다고 발표했습니다.',
     source: 'hankyoreh.com',
     reporter: '김기자',
     history: [
       {
         timestamp: '2025-06-26 18:45',
-        title: '정부, 탄소중립 정책 일부 수정 검토',
-        body: '정부가 기존 탄소중립 정책의 일부 수정을 검토하고 있다고 발표했습니다. 이는 경제적 부담과 실현 가능성을 고려한 결정으로 보입니다. 환경단체들은 우려를 표명하고 있습니다.',
+        title: '정부, 탄소중립 정책 전면 재검토 발표',
+        body: '정부가 기존 탄소중립 정책을 전면 재검토하겠다고 발표했습니다. 이는 경제적 부담과 실현 가능성을 고려한 결정으로 보입니다. 환경단체들은 강력히 반발하고 있으며, 국제사회의 우려도 커지고 있습니다.',
         changeType: 'both'
       },
       {
         timestamp: '2025-06-26 16:20',
-        title: '정부, 탄소중립 정책 일부 조정 검토',
-        body: '정부가 기존 탄소중립 정책의 일부 조정을 검토하고 있다고 발표했습니다. 경제적 부담을 고려한 조치로 보입니다.',
+        title: '정부, 탄소중립 정책 일부 수정 검토',
+        body: '정부가 기존 탄소중립 정책의 일부 수정을 검토하고 있다고 발표했습니다. 경제적 부담을 고려한 조치로 보입니다.',
         changeType: 'title'
       }
     ]
@@ -56,7 +56,7 @@ export const mockNewsData: NewsArticle[] = [
   {
     id: 3,
     url: 'https://ytn.co.kr/article/20250625-housing-crisis',
-    title: '서울 아파트 평균 가격 10억 돌파',
+    title: '서울 아파트 평균 가격 10억원 돌파',
     date: '2025-06-25',
     desc: '서울 지역 아파트 평균 가격이 처음으로 10억원을 넘어섰습니다.',
     source: 'ytn.co.kr',
@@ -64,13 +64,13 @@ export const mockNewsData: NewsArticle[] = [
     history: [
       {
         timestamp: '2025-06-25 20:15',
-        title: '서울 아파트 평균 가격 10억 돌파',
+        title: '서울 아파트 평균 가격 10억원 돌파',
         body: '서울 지역 아파트 평균 가격이 처음으로 10억원을 넘어섰습니다. 부동산 전문가들은 이러한 상승세가 당분간 지속될 것으로 전망하고 있습니다.',
         changeType: 'content'
       },
       {
         timestamp: '2025-06-25 18:30',
-        title: '서울 아파트 평균 가격 10억 근접',
+        title: '서울 아파트 평균 가격 10억 돌파',
         body: '서울 지역 아파트 평균 가격이 10억원에 근접했습니다. 부동산 시장의 과열 우려가 커지고 있습니다.',
         changeType: 'title'
       }
@@ -126,6 +126,54 @@ export const mockNewsData: NewsArticle[] = [
         changeType: 'content'
       }
     ]
+  },
+  // 경미한 수정 케이스 추가
+  {
+    id: 7,
+    url: 'https://sbs.co.kr/article/20250621-weather-news',
+    title: '내일 전국 대부분 지역 맑음',
+    date: '2025-06-21',
+    desc: '내일은 전국 대부분 지역에서 맑은 날씨가 예상됩니다.',
+    source: 'sbs.co.kr',
+    reporter: '날씨기자',
+    history: [
+      {
+        timestamp: '2025-06-21 18:00',
+        title: '내일 전국 대부분 지역 맑음',
+        body: '내일은 전국 대부분 지역에서 맑은 날씨가 예상됩니다. 기온은 평년과 비슷한 수준을 보일 것으로 전망됩니다.',
+        changeType: 'content'
+      },
+      {
+        timestamp: '2025-06-21 17:45',
+        title: '내일 전국 대부분지역 맑음',
+        body: '내일은 전국 대부분 지역에서 맑은 날씨가 예상됩니다. 기온은 평년과 비슷한 수준을 보일 것으로 전망됩니다.',
+        changeType: 'title'
+      }
+    ]
+  },
+  // 또 다른 경미한 수정 케이스
+  {
+    id: 8,
+    url: 'https://mbc.co.kr/article/20250620-culture-news',
+    title: '부산국제영화제 개막식 성황리 개최',
+    date: '2025-06-20',
+    desc: '부산국제영화제 개막식이 성황리에 개최되었습니다.',
+    source: 'mbc.co.kr',
+    reporter: '문화기자',
+    history: [
+      {
+        timestamp: '2025-06-20 21:30',
+        title: '부산국제영화제 개막식 성황리 개최',
+        body: '부산국제영화제 개막식이 성황리에 개최되었습니다. 국내외 유명 배우들이 참석하여 화제를 모았습니다.',
+        changeType: 'content'
+      },
+      {
+        timestamp: '2025-06-20 21:15',
+        title: '부산국제영화제 개막식 성황리에 개최',
+        body: '부산국제영화제 개막식이 성황리에 개최되었습니다. 국내외 유명 배우들이 참석하여 화제를 모았습니다.',
+        changeType: 'title'
+      }
+    ]
   }
 ];
 
@@ -158,14 +206,14 @@ export const mockUserArticles: UserArticle[] = [
   },
   {
     url: 'https://hankyoreh.com/article/20250626-climate-policy',
-    title: '정부, 탄소중립 정책 일부 수정 검토',
+    title: '정부, 탄소중립 정책 전면 재검토 발표',
     date: '2025-06-26',
-    desc: '정부가 기존 탄소중립 정책의 일부 수정을 검토하고 있다고 발표했습니다.',
+    desc: '정부가 기존 탄소중립 정책을 전면 재검토하겠다고 발표했습니다.',
     history: [
       {
         timestamp: '2025-06-26 18:45',
-        title: '정부, 탄소중립 정책 일부 수정 검토',
-        body: '정부가 기존 탄소중립 정책의 일부 수정을 검토하고 있다고 발표했습니다. 이는 경제적 부담과 실현 가능성을 고려한 결정으로 보입니다.',
+        title: '정부, 탄소중립 정책 전면 재검토 발표',
+        body: '정부가 기존 탄소중립 정책을 전면 재검토하겠다고 발표했습니다. 이는 경제적 부담과 실현 가능성을 고려한 결정으로 보입니다.',
         changeType: 'both'
       },
       {
@@ -178,15 +226,36 @@ export const mockUserArticles: UserArticle[] = [
   },
   {
     url: 'https://ytn.co.kr/article/20250625-housing-crisis',
-    title: '서울 아파트 평균 가격 10억 돌파',
+    title: '서울 아파트 평균 가격 10억원 돌파',
     date: '2025-06-25',
     desc: '서울 지역 아파트 평균 가격이 처음으로 10억원을 넘어섰습니다.',
     history: [
       {
         timestamp: '2025-06-25 20:15',
-        title: '서울 아파트 평균 가격 10억 돌파',
+        title: '서울 아파트 평균 가격 10억원 돌파',
         body: '서울 지역 아파트 평균 가격이 처음으로 10억원을 넘어섰습니다.',
         changeType: 'content'
+      }
+    ]
+  },
+  // 경미한 수정 케이스 추가
+  {
+    url: 'https://sbs.co.kr/article/20250621-weather-news',
+    title: '내일 전국 대부분 지역 맑음',
+    date: '2025-06-21',
+    desc: '내일은 전국 대부분 지역에서 맑은 날씨가 예상됩니다.',
+    history: [
+      {
+        timestamp: '2025-06-21 18:00',
+        title: '내일 전국 대부분 지역 맑음',
+        body: '내일은 전국 대부분 지역에서 맑은 날씨가 예상됩니다. 기온은 평년과 비슷한 수준을 보일 것으로 전망됩니다.',
+        changeType: 'content'
+      },
+      {
+        timestamp: '2025-06-21 17:45',
+        title: '내일 전국 대부분지역 맑음',
+        body: '내일은 전국 대부분 지역에서 맑은 날씨가 예상됩니다. 기온은 평년과 비슷한 수준을 보일 것으로 전망됩니다.',
+        changeType: 'title'
       }
     ]
   },
