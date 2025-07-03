@@ -10,7 +10,6 @@ import { UrlInput } from '../components/UrlInput';
 import { Timeline } from '../components/Timeline';
 import { VersionCompare } from '../components/VersionCompare';
 import { ActionButtons } from '../components/ActionButtons';
-import { ChangeSummary } from '../components/ChangeSummary';
 import { SubscriptionTabs } from '../components/SubscriptionTabs';
 
 import { mockNewsData, mockUserArticles } from '../data/mockData';
@@ -25,7 +24,6 @@ const Index = () => {
   const [selectedB, setSelectedB] = useState(0);
   const [likeStatus, setLikeStatus] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showChangeSummary, setShowChangeSummary] = useState(false);
   
   // User data
   const [myArticles, setMyArticles] = useState<UserArticle[]>(mockUserArticles);
@@ -52,6 +50,7 @@ const Index = () => {
     ]
   });
 
+  // 기사 클릭 시 바로 상세 변경 이력 페이지로 이동
   const showHistory = (articleId?: number, customHistory?: NewsVersion[]) => {
     let history: NewsVersion[] = [];
     
@@ -69,13 +68,8 @@ const Index = () => {
     setCurrentHistory(history);
     setSelectedA(history.length - 1);
     setSelectedB(Math.max(0, history.length - 2));
-    setShowChangeSummary(true);
+    setCurrentView('history'); // 바로 상세 이력 페이지로 이동
     setLikeStatus('');
-  };
-
-  const proceedToHistory = () => {
-    setShowChangeSummary(false);
-    setCurrentView('history');
   };
 
   const handleUrlSubmit = (url: string) => {
@@ -214,36 +208,12 @@ const Index = () => {
     </div>
   );
 
-  const renderChangeSummarySection = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Button
-          onClick={() => {
-            setShowChangeSummary(false);
-            setCurrentView('home');
-          }}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          기사 목록으로
-        </Button>
-      </div>
-      
-      <ChangeSummary
-        history={currentHistory}
-        onProceed={proceedToHistory}
-      />
-    </div>
-  );
-
   const renderHistorySection = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button
           onClick={() => {
             setCurrentView('home');
-            setShowChangeSummary(false);
           }}
           variant="outline"
           className="flex items-center gap-2"
@@ -285,10 +255,6 @@ const Index = () => {
   );
 
   const renderContent = () => {
-    if (showChangeSummary) {
-      return renderChangeSummarySection();
-    }
-    
     switch (currentView) {
       case 'history':
         return renderHistorySection();

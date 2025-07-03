@@ -1,4 +1,4 @@
-import { ExternalLink, Calendar, User } from 'lucide-react';
+import { ExternalLink, Calendar, User, AlertTriangle, FileText, Pencil } from 'lucide-react';
 import { NewsArticle } from '../types/news';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
@@ -45,6 +45,42 @@ function analyzeChangeSeverity(article: NewsArticle): 'minor' | 'moderate' | 'ma
   return 'minor';
 }
 
+// 변경 분석 정보를 생성하는 함수
+function analyzeChanges(article: NewsArticle) {
+  if (article.history.length < 2) return { type: 'minor', summary: '변경 사항이 없습니다.' };
+  
+  const firstVersion = article.history[0];
+  const lastVersion = article.history[article.history.length - 1];
+  
+  const titleChanged = firstVersion.title !== lastVersion.title;
+  const bodyChanged = firstVersion.body !== lastVersion.body;
+  
+  // 간단한 분석 로직 (실제로는 더 정교한 AI 분석이 필요)
+  const titleWords = firstVersion.title.split(' ');
+  const lastTitleWords = lastVersion.title.split(' ');
+  const titleChangeRatio = Math.abs(titleWords.length - lastTitleWords.length) / titleWords.length;
+  
+  const bodyWords = firstVersion.body.split(' ');
+  const lastBodyWords = lastVersion.body.split(' ');
+  const bodyChangeRatio = Math.abs(bodyWords.length - lastBodyWords.length) / bodyWords.length;
+  
+  let changeType: 'minor' | 'moderate' | 'major' = 'minor';
+  let summary = '';
+  
+  if (titleChangeRatio > 0.3 || bodyChangeRatio > 0.2) {
+    changeType = 'major';
+    summary = '기사의 핵심 내용이나 보도 방향성에 영향을 주는 중대한 변경이 감지되었습니다.';
+  } else if (titleChanged || bodyChangeRatio > 0.1) {
+    changeType = 'moderate';
+    summary = '제목 또는 본문에 의미있는 변경사항이 있습니다.';
+  } else {
+    changeType = 'minor';
+    summary = '주로 오타 수정이나 문체 개선 수준의 경미한 변경입니다.';
+  }
+  
+  return { type: changeType, summary };
+}
+
 // 변경 성격에 따른 배지 컴포넌트
 function ChangeSeverityBadge({ severity }: { severity: 'minor' | 'moderate' | 'major' }) {
   const config = {
@@ -76,8 +112,18 @@ function ChangeSeverityBadge({ severity }: { severity: 'minor' | 'moderate' | 'm
   );
 }
 
+// 변경 분석 아이콘
+function getChangeIcon(type: 'minor' | 'moderate' | 'major') {
+  switch (type) {
+    case 'major': return <AlertTriangle className="h-4 w-4 text-red-500" />;
+    case 'moderate': return <FileText className="h-4 w-4 text-yellow-500" />;
+    default: return <Pencil className="h-4 w-4 text-green-500" />;
+  }
+}
+
 export function NewsCard({ article, onClick }: NewsCardProps) {
   const changeSeverity = analyzeChangeSeverity(article);
+  const changeAnalysis = analyzeChanges(article);
 
   return (
     <Card 
@@ -112,9 +158,26 @@ export function NewsCard({ article, onClick }: NewsCardProps) {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <p className="text-gray-700 text-sm leading-relaxed line-clamp-3 mb-3">
+        <p className="text-gray-700 text-sm leading-relaxed line-clamp-3 mb-4">
           {article.desc}
         </p>
+        
+        {/* 변경 이력 분석 섹션 */}
+        <div className="bg-gray-50 p-3 rounded-lg mb-3 border">
+          <div className="flex items-start gap-3">
+            {getChangeIcon(changeAnalysis.type)}
+            <div className="flex-1 min-w-0">
+              <h4 className="font-medium text-gray-900 text-sm mb-1">변경 이력 분석</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">{changeAnalysis.summary}</p>
+              <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
+                <span>• 총 {article.history.length}개 버전</span>
+                <span>• 첫 게시: {article.history[0]?.timestamp}</span>
+                <span>• 최종 수정: {article.history[article.history.length - 1]?.timestamp}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div className="flex items-center justify-between">
           <a
             href={article.url}
@@ -126,9 +189,9 @@ export function NewsCard({ article, onClick }: NewsCardProps) {
             <ExternalLink className="h-3 w-3" />
             원문 보기
           </a>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-            {article.history.length}개 버전
-          </span>
+          <div className="text-xs text-white bg-newstapa-blue px-3 py-1 rounded-full font-medium">
+            상세 이력 확인 →
+          </div>
         </div>
       </CardContent>
     </Card>
